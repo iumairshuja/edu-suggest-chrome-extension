@@ -28,18 +28,18 @@ function highlightSelection(range, color) {
     return null;
   }
 
-  const span = document.createElement("span");
-  span.className = "edusuggest-highlight";
-  span.style.backgroundColor = color;
-  span.dataset.timestamp = Date.now().toString();
+  const div = document.createElement("div");
+  div.className = "edusuggest-highlight";
+  div.style.backgroundColor = color;
+  div.dataset.timestamp = Date.now().toString();
 
   const contents = range.extractContents();
-  span.appendChild(contents);
-  range.insertNode(span);
+  div.appendChild(contents);
+  range.insertNode(div);
 
-  saveHighlight(span.textContent, color, span);
+  saveHighlight(div.textContent, color, div);
 
-  return span;
+  return div;
 }
 
 function isAlreadyHighlighted(range) {
@@ -76,14 +76,9 @@ document.addEventListener("mouseup", (e) => {
           event.preventDefault();
           event.stopPropagation();
           const color = HIGHLIGHT_COLORS[button.dataset.color];
-          const highlightedSpan = highlightSelection(range, color);
-          if (highlightedSpan) {
+          const highlighteddiv = highlightSelection(range, color);
+          if (highlighteddiv) {
             removeHighlightOptions();
-            saveHighlight(
-              highlightedSpan.textContent,
-              color,
-              range.commonAncestorContainer
-            );
           }
           selection.removeAllRanges();
         });
@@ -200,11 +195,11 @@ function applyHighlights(highlights) {
       // Optionally, you could try to find the text anywhere in the document and highlight it
       const range = findRangeForHighlight(highlight);
       if (range) {
-        const span = document.createElement('span');
-        span.className = "edusuggest-highlight";
-        span.style.backgroundColor = highlight.color;
-        span.dataset.timestamp = highlight.timestamp.toString();
-        range.surroundContents(span);
+        const div = document.createElement('div');
+        div.className = "edusuggest-highlight";
+        div.style.backgroundColor = highlight.color;
+        div.dataset.timestamp = highlight.timestamp.toString();
+        range.surroundContents(div);
         console.log(`Highlight ${index + 1} applied using fallback method:`, highlight);
       } else {
         console.error(`Could not apply highlight ${index + 1}:`, highlight);
@@ -251,11 +246,11 @@ function findElementByText(text) {
 function applyHighlightToElement(element, highlight) {
   const range = document.createRange();
   range.selectNodeContents(element);
-  const span = document.createElement('span');
-  span.className = "edusuggest-highlight";
-  span.style.backgroundColor = highlight.color;
-  span.dataset.timestamp = highlight.timestamp.toString();
-  range.surroundContents(span);
+  const div = document.createElement('div');
+  div.className = "edusuggest-highlight";
+  div.style.backgroundColor = highlight.color;
+  div.dataset.timestamp = highlight.timestamp.toString();
+  range.surroundContents(div);
 }
 
 function findRangeForHighlight(highlight) {
@@ -318,15 +313,15 @@ function getAllTextNodes(element) {
 
 function wrapTextInHighlight(textNode, highlight, startOffset, endOffset) {
   const parent = textNode.parentNode;
-  const highlightSpan = document.createElement('span');
-  highlightSpan.className = "edusuggest-highlight";
-  highlightSpan.style.backgroundColor = highlight.color;
-  highlightSpan.dataset.timestamp = highlight.timestamp.toString();
+  const highlightdiv = document.createElement('div');
+  highlightdiv.className = "edusuggest-highlight";
+  highlightdiv.style.backgroundColor = highlight.color;
+  highlightdiv.dataset.timestamp = highlight.timestamp.toString();
 
   const range = document.createRange();
   range.setStart(textNode, startOffset);
   range.setEnd(textNode, endOffset);
-  range.surroundContents(highlightSpan);
+  range.surroundContents(highlightdiv);
 }
 
 function deleteHighlight(timestamp) {
