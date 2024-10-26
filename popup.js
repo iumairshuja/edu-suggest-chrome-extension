@@ -1,66 +1,11 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const tabButtons = document.querySelectorAll('.tab-btn');
-  const tabContents = document.querySelectorAll('.tab-content');
-  const highlightsList = document.getElementById('highlightsList');
-  const suggestionsList = document.getElementById('suggestionsList');
-  const settingsForm = document.getElementById('settingsForm');
+document.addEventListener("DOMContentLoaded", () => {
+  // Get DOM elements
+  const highlightsList = document.getElementById("recent-highlights");
+  const viewAllBtn = document.getElementById("view-all-highlights");
+  const tabButtons = document.querySelectorAll(".tab-btn");
+  const tabContents = document.querySelectorAll(".tab-content");
 
-  // Tab switching
-  tabButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      tabButtons.forEach(btn => btn.classList.remove('active'));
-      tabContents.forEach(content => {
-        content.classList.remove('active');
-        content.classList.remove('fade-in-scale');
-      });
-      button.classList.add('active');
-      const tabContent = document.getElementById(button.dataset.tab);
-      tabContent.classList.add('active');
-      setTimeout(() => {
-        tabContent.classList.add('fade-in-scale');
-      }, 10);
-    });
-  });
-
-  // Load highlights
-  function loadHighlights() {
-    chrome.storage.local.get('highlights', (result) => {
-      console.log('Retrieved highlights:', result.highlights); // Debug log
-      const highlights = result.highlights || [];
-      highlightsList.innerHTML = '';
-      if (Array.isArray(highlights)) {
-        if (highlights.length === 0) {
-          highlightsList.innerHTML = '<li>No highlights found</li>';
-        } else {
-          highlights.forEach((highlight, index) => {
-            const li = document.createElement('li');
-            li.classList.add('highlight-item', 'animate__animated', 'animate__fadeIn');
-            li.innerHTML = `
-              <div class="highlight-text" style="background-color: ${highlight.color}">
-                ${highlight.text.substring(0, 50)}${highlight.text.length > 50 ? '...' : ''}
-              </div>
-              <div class="highlight-actions">
-                <button class="view-btn">View</button>
-                <button class="delete-btn">Delete</button>
-              </div>
-            `;
-            li.querySelector('.view-btn').addEventListener('click', () => viewHighlight(highlight, index));
-            li.querySelector('.delete-btn').addEventListener('click', () => deleteHighlight(index));
-            highlightsList.appendChild(li);
-          });
-        }
-      } else {
-        console.error('Highlights is not an array:', highlights);
-        highlightsList.innerHTML = '<li>Error: Highlights data is invalid. Please check the console for more information.</li>';
-      }
-    });
-  }
-
-  // Event listener for "View All Highlights" button
-  document.getElementById('view-all-highlights').addEventListener('click', function () {
-    chrome.tabs.create({ url: chrome.runtime.getURL("highlights.html") });
-  });
-
+  // Define these functions first
   function viewHighlight(highlight, index) {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       const currentTab = tabs[0];
@@ -69,85 +14,108 @@ document.addEventListener('DOMContentLoaded', () => {
         chrome.tabs.sendMessage(currentTab.id, {
           action: "scrollToHighlight",
           highlightText: highlight.text,
-          timestamp: highlight.timestamp
+          timestamp: highlight.timestamp,
         });
         window.close();
       } else {
         // Navigate to the page with the highlight
-        chrome.tabs.update(currentTab.id, { url: highlight.url }, function (tab) {
-          // Wait for the page to load, then scroll to the highlight
-          chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
-            if (tabId === tab.id && info.status === 'complete') {
-              chrome.tabs.onUpdated.removeListener(listener);
-              chrome.tabs.sendMessage(tabId, {
-                action: "scrollToHighlight",
-                highlightText: highlight.text,
-                timestamp: highlight.timestamp
-              });
-              window.close();
-            }
-          });
-        });
+        chrome.tabs.update(
+          currentTab.id,
+          { url: highlight.url },
+          function (tab) {
+            // Wait for the page to load, then scroll to the highlight
+            chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
+              if (tabId === tab.id && info.status === "complete") {
+                chrome.tabs.onUpdated.removeListener(listener);
+                chrome.tabs.sendMessage(tabId, {
+                  action: "scrollToHighlight",
+                  highlightText: highlight.text,
+                  timestamp: highlight.timestamp,
+                });
+                window.close();
+              }
+            });
+          }
+        );
       }
     });
   }
 
   function deleteHighlight(index) {
-    chrome.storage.local.get('highlights', (result) => {
+    chrome.storage.local.get("highlights", (result) => {
       const highlights = result.highlights || [];
       highlights.splice(index, 1);
       chrome.storage.local.set({ highlights }, loadHighlights);
     });
   }
 
-  // Load suggestions (placeholder)
-  function loadSuggestions() {
-    const placeholderSuggestions = [
-      'How to improve your study habits',
-      'The importance of active recall in learning',
-      'Effective note-taking strategies for students'
-    ];
-    suggestionsList.innerHTML = '';
-    placeholderSuggestions.forEach(suggestion => {
-      const li = document.createElement('li');
-      li.textContent = suggestion;
-      li.classList.add('fade-in-scale');
-      suggestionsList.appendChild(li);
+  function loadHighlights() {
+    chrome.storage.local.get("highlights", (result) => {
+      console.log("Retrieved highlights:", result.highlights); // Debug log
+      const highlights = result.highlights || [];
+      highlightsList.innerHTML = "";
+      if (Array.isArray(highlights)) {
+        if (highlights.length === 0) {
+          highlightsList.innerHTML = "<div>No highlights found</div>";
+        } else {
+          highlights.forEach((highlight, index) => {
+            const li = document.createElement("li");
+            li.classList.add("highlight-item", "animate__animated", "animate__fadeIn");
+            li.innerHTML = `
+    <div class="highlight-content">
+      <div class="highlight-text">
+        ${highlight.text.split(/[.!?]+/).slice(0, 2).join('.')}${highlight.text.split(/[.!?]+/).length > 2 ? '.' : ''}
+      </div>
+      <div class="highlight-actions">
+        <button class="view-btn" title="View highlight">
+          <i class="fas fa-eye"></i>
+        </button>
+        <button class="delete-btn" title="Delete highlight">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+  
+  `;
+
+            li.querySelector(".view-btn").addEventListener("click", () =>
+              viewHighlight(highlight, index)
+            );
+            li.querySelector(".delete-btn").addEventListener("click", () =>
+              deleteHighlight(index)
+            );
+            highlightsList.appendChild(li);
+          });
+        }
+      } else {
+        console.error("Highlights is not an array:", highlights);
+        highlightsList.innerHTML =
+          "<li>Error: Highlights data is invalid. Please check the console for more information.</li>";
+      }
     });
   }
 
-  // Settings form submission
-  settingsForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const username = document.getElementById('username').value;
-    const theme = document.getElementById('theme').value;
-    chrome.storage.local.set({ username, theme }, () => {
-      alert('Settings saved!');
-      applyTheme(theme);
+  // View All Highlights button
+  if (viewAllBtn) {
+    viewAllBtn.addEventListener("click", () => {
+      chrome.tabs.create({ url: "highlights.html" });
+    });
+  }
+
+  // Tab switching functionality
+  tabButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const tabName = button.getAttribute("data-tab");
+
+      // Update active states
+      tabButtons.forEach((btn) => btn.classList.remove("active"));
+      tabContents.forEach((content) => content.classList.remove("active"));
+
+      button.classList.add("active");
+      document.getElementById(tabName)?.classList.add("active");
     });
   });
 
-  // Load settings
-  function loadSettings() {
-    chrome.storage.local.get(['username', 'theme'], (result) => {
-      if (result.username) {
-        document.getElementById('username').value = result.username;
-        document.querySelector('.username').textContent = result.username;
-      }
-      if (result.theme) {
-        document.getElementById('theme').value = result.theme;
-        applyTheme(result.theme);
-      }
-    });
-  }
-
-  function applyTheme(theme) {
-    document.body.classList.toggle('dark', theme === 'dark');
-  }
-
+  // Initial load
   loadHighlights();
-  loadSuggestions();
-  loadSettings();
-
 
 });

@@ -4,46 +4,72 @@
 <head>
   <title>EduSuggest</title>
   <link rel="stylesheet" type="text/css" href="popup.css">
-  <link rel="stylesheet" type="text/css" href="../Animate.css">
+  <link rel="stylesheet" type="text/css" href="Animate.css">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
 </head>
 
 <body>
   <div class="container">
     <header class="slide-in-left">
-      <h1>EduSuggest</h1>
-      <div class="user-info">
-        <img src="default-avatar.png" alt="User Avatar" class="avatar">
-        <span class="username">John Doe</span>
+      <div class="header-content">
+        <h1>EduSuggest</h1>
+        <div class="user-profile">
+          <i class="fas fa-user-circle"></i>
+          <span class="username">John Doe</span>
+        </div>
       </div>
     </header>
-    <nav class="slide-in-right">
-      <button class="tab-btn active" data-tab="highlights">Highlights</button>
-      <button class="tab-btn" data-tab="suggestions">Suggestions</button>
-      <button class="tab-btn" data-tab="settings">Settings</button>
+
+    <nav class="tabs slide-in-right">
+      <button class="tab-btn active" data-tab="highlights">
+        <i class="fas fa-highlighter"></i> Highlights
+      </button>
+      <button class="tab-btn" data-tab="suggestions">
+        <i class="fas fa-lightbulb"></i> Suggestions
+      </button>
+      <button class="tab-btn" data-tab="settings">
+        <i class="fas fa-cog"></i> Settings
+      </button>
     </nav>
+
     <main>
-      <section id="highlights" class="tab-content active fade-in-scale">
+      <section id="highlights" class="tab-content active">
         <h2>Your Highlights</h2>
-        <ul id="highlightsList"></ul>
-        <button id="view-all-highlights">View All Highlights</button>
+
+        <!-- Recent highlights container -->
+        <div id="recent-highlights">
+          <!-- Highlights will be populated here -->
+        </div>
+
+        <button id="view-all-highlights" class="view-all-btn">
+          <i class="fas fa-external-link-alt"></i> View All Highlights
+        </button>
       </section>
-      <section id="suggestions" class="tab-content fade-in-scale">
-        <h2>Suggested Articles</h2>
-        <ul id="suggestionsList"></ul>
+
+      <section id="suggestions" class="tab-content">
+        <h2>Suggested Topics</h2>
+        <ul id="suggestions-list"></ul>
       </section>
-      <section id="settings" class="tab-content fade-in-scale">
+
+      <section id="settings" class="tab-content">
         <h2>Settings</h2>
-        <form id="settingsForm">
-          <label for="username">Username:</label>
-          <input type="text" id="username" name="username">
-          <label for="theme">Theme:</label>
-          <select id="theme" name="theme">
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-          </select>
-          <button type="submit" class="bounce">Save Settings</button>
+        <form id="settings-form">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Enter username">
+          </div>
+          <div class="form-group">
+            <label for="theme">Theme</label>
+            <select id="theme">
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </select>
+          </div>
+          <button type="submit" class="save-btn">
+            <i class="fas fa-save"></i> Save Settings
+          </button>
         </form>
       </section>
     </main>

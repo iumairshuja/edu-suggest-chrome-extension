@@ -1,28 +1,33 @@
 document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('highlights-container');
     const menu = document.getElementById('menu');
-    const searchContainer = document.getElementById('search-container');
-    const dateContainer = document.getElementById('date-container');
-    const searchInput = document.getElementById('search-input');
-    const searchButton = document.getElementById('search-btn');
-    const backButton = document.getElementById('back-btn');
-    const dateInput = document.getElementById('date-input');
-    const dateSearchButton = document.getElementById('date-search-btn');
-    const backDateButton = document.getElementById('back-date-btn');
-    const viewAllButton = document.getElementById('view-all');
-    const deleteAllButton = document.getElementById('delete-all');
+    const searchSections = document.getElementById('search-sections');
+
+    // Initialize search buttons and inputs
+    const searchKeywordBtn = document.getElementById('search-keyword');
+    const searchWebsiteBtn = document.getElementById('search-website');
+    const searchDatetimeBtn = document.getElementById('search-datetime');
+    const searchBtn = document.getElementById('search-btn');
+    const websiteSearchBtn = document.getElementById('website-search-btn');
+    const dateSearchBtn = document.getElementById('date-search-btn');
+    const viewAllBtn = document.getElementById('view-all');
+    const deleteAllBtn = document.getElementById('delete-all');
 
     let allHighlights = [];
 
-    function extractWebsiteName(url) {
-        try {
-            const hostname = new URL(url).hostname;
-            return hostname.replace(/^www\./i, '').split('.')[0];
-        } catch (error) {
-            console.error('Invalid URL:', url);
-            return 'Unknown';
-        }
-    }
+    // Define showAll as a variable at the top of your scope
+    let showAll = false;  // or true, depending on your default state
+
+    // function extractWebsiteName(url) {
+    //     try {
+    //         const hostname = new URL(url).hostname;
+    //         return hostname.replace(/^www\./i, '').split('.')[0];
+    //     } catch (error) {
+    //         console.error('Invalid URL:', url);
+    //         return 'Unknown';
+    //     }
+    // }
+
 
     function formatDate(timestamp) {
         try {
@@ -39,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return 'Invalid Date';
         }
     }
+
 
     function updateHighlightTimes() {
         document.querySelectorAll('.highlight-date').forEach(element => {
@@ -61,9 +67,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function updateMenuVisibility(showAll) {
-        menu.style.display = showAll ? 'none' : 'flex';
-        viewAllButton.style.display = showAll ? 'none' : 'inline-block';
+    function updateMenuVisibility(element) {
+        if (element && element.style) {
+            // Now showAll will be properly referenced
+            element.style.display = showAll ? 'block' : 'none';
+        }
+        viewAllBtn.style.display = showAll ? 'none' : 'inline-block';
         const backToMainButton = document.getElementById('back-to-main');
         if (showAll) {
             if (!backToMainButton) {
@@ -85,26 +94,36 @@ document.addEventListener('DOMContentLoaded', () => {
         container.innerHTML = ''; // Clear previous highlights
 
         if (highlights.length === 0) {
-            container.innerHTML = '<p>No highlights found.</p>';
+            container.innerHTML = '<p class="no-highlights">No highlights found.</p>';
             return;
         }
 
         highlights.forEach(highlight => {
-            const websiteName = extractWebsiteName(highlight.url);
-
             const highlightElement = document.createElement('div');
-            highlightElement.className = 'highlight';
+            highlightElement.className = 'highlight-card';
+
+            // Truncate URL for display
+            const displayUrl = new URL(highlight.url).hostname;
+
             highlightElement.innerHTML = `
-        <div class="highlight-text">
-          <span class="highlight-color" style="background-color: ${highlight.color};"></span>
-          "${highlight.text}"
-        </div>
-        <div class="highlight-info">
-          URL: ${highlight.url || 'N/A'}<br>
-          Date: <span class="highlight-date" data-timestamp="${highlight.timestamp}"></span>
-        </div>
-        <button class="delete-btn" data-id="${highlight.timestamp}">Delete</button>
-      `;
+                <div class="highlight-content">
+                    <div class="highlight-text">
+                        <span class="highlight-color" style="background-color: ${highlight.color};"></span>
+                        <p>${highlight.text}</p>
+                    </div>
+                    <div class="highlight-info">
+                        <a href="${highlight.url}" target="_blank" class="highlight-url">
+                            <i class="fas fa-link"></i> ${displayUrl}
+                        </a>
+                        <span class="highlight-date" data-timestamp="${highlight.timestamp}">
+                            <i class="far fa-clock"></i>
+                        </span>
+                    </div>
+                    <button class="delete-btn" data-id="${highlight.timestamp}">
+                        <i class="fas fa-trash-alt"></i> Delete
+                    </button>
+                </div>
+            `;
             container.appendChild(highlightElement);
         });
 
@@ -138,14 +157,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showSearch(type) {
-        menu.style.display = 'none';
-        searchContainer.style.display = 'none';
-        dateContainer.style.display = 'none';
+        // Hide all search sections first
+        document.querySelectorAll('.search-section').forEach(section => {
+            section.classList.remove('active');
+        });
 
-        if (type === 'keyword') {
-            searchContainer.style.display = 'flex';
-        } else if (type === 'datetime') {
-            dateContainer.style.display = 'flex';
+        // Show the selected search section
+        const searchSection = document.getElementById(`${type}-search`);
+        if (searchSection) {
+            searchSection.classList.add('active');
+            menu.style.display = 'none';
+
+            // Focus on the appropriate input
+            const input = searchSection.querySelector('input');
+            if (input) input.focus();
         }
     }
 
@@ -156,13 +181,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const filteredHighlights = allHighlights.filter(highlight => {
             if (searchType === 'keyword') {
-                return highlight.text.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    highlight.url.toLowerCase().includes(searchTerm.toLowerCase());
+                return highlight.text.toLowerCase().includes(searchTerm.toLowerCase());
+            } else if (searchType === 'website') {
+                return highlight.url.toLowerCase().includes(searchTerm.toLowerCase());
             } else if (searchType === 'datetime') {
                 const highlightDate = new Date(highlight.timestamp);
                 const searchDate = new Date(searchTerm);
                 return highlightDate.toDateString() === searchDate.toDateString();
             }
+            return false;
         });
 
         if (filteredHighlights.length === 0) {
@@ -172,43 +199,77 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    backButton.onclick = () => {
-        searchContainer.style.display = 'none';
-        menu.style.display = 'flex';
-        loadHighlights(false);
-    };
+    // Close button functionality
+    document.querySelectorAll('.close-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            btn.closest('.search-section').classList.remove('active');
+            menu.style.display = 'flex';
+            loadHighlights(false);
+        });
+    });
 
-    backDateButton.onclick = () => {
-        dateContainer.style.display = 'none';
-        menu.style.display = 'flex';
-        loadHighlights(false);
-    };
+    // Add event listeners only if elements exist
+    if (searchKeywordBtn) {
+        searchKeywordBtn.addEventListener('click', () => showSearch('keyword'));
+    }
 
-    searchButton.onclick = () => {
-        try {
-            const searchTerm = searchInput.value;
-            performSearch(searchTerm, 'keyword');
-        } catch (error) {
-            alert(error.message);
-        }
-    };
+    if (searchWebsiteBtn) {
+        searchWebsiteBtn.addEventListener('click', () => showSearch('website'));
+    }
 
-    dateSearchButton.onclick = () => {
-        try {
-            const searchDate = dateInput.value;
-            performSearch(searchDate, 'datetime');
-        } catch (error) {
-            alert(error.message);
-        }
-    };
+    if (searchDatetimeBtn) {
+        searchDatetimeBtn.addEventListener('click', () => showSearch('datetime'));
+    }
 
-    // Menu button listeners
-    document.getElementById('search-keyword').addEventListener('click', () => showSearch('keyword'));
-    document.getElementById('search-website').addEventListener('click', () => showSearch('keyword'));
-    document.getElementById('search-datetime').addEventListener('click', () => showSearch('datetime'));
-    viewAllButton.addEventListener('click', () => loadHighlights(true));
-    deleteAllButton.addEventListener('click', deleteAllHighlights);
+    // Search button event listeners
+    if (searchBtn) {
+        searchBtn.addEventListener('click', () => {
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                try {
+                    performSearch(searchInput.value, 'keyword');
+                } catch (error) {
+                    alert(error.message);
+                }
+            }
+        });
+    }
 
+    if (websiteSearchBtn) {
+        websiteSearchBtn.addEventListener('click', () => {
+            const websiteInput = document.getElementById('website-input');
+            if (websiteInput) {
+                try {
+                    performSearch(websiteInput.value, 'website');
+                } catch (error) {
+                    alert(error.message);
+                }
+            }
+        });
+    }
+
+    if (dateSearchBtn) {
+        dateSearchBtn.addEventListener('click', () => {
+            const dateInput = document.getElementById('date-input');
+            if (dateInput) {
+                try {
+                    performSearch(dateInput.value, 'datetime');
+                } catch (error) {
+                    alert(error.message);
+                }
+            }
+        });
+    }
+
+    if (viewAllBtn) {
+        viewAllBtn.addEventListener('click', () => loadHighlights(true));
+    }
+
+    if (deleteAllBtn) {
+        deleteAllBtn.addEventListener('click', deleteAllHighlights);
+    }
+
+    // Load initial highlights
     loadHighlights(false);
 
     // Update times every minute
