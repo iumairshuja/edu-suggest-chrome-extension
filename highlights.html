@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>All Highlights</title>
+  <link rel="stylesheet" type="text/css" href="highlight.css">
+  <link rel="stylesheet" type="text/css" href="../Animate.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div class="container">
+    <header class="slide-in-left">
+      <h1>All Highlights</h1>
+    </header>
+    <nav class="slide-in-right">
+      <button id="search-keyword">Search by Keyword</button>
+      <button id="search-website">Search by Website</button>
+      <button id="search-datetime">Search by Date/Time</button>
+      <button id="view-all">View All</button>
+      <button id="delete-all">Delete All Highlights</button>
+    </nav>
+    <main>
+      <div id="menu">
+        <div id="search-container">
+          <input type="text" id="search-input" placeholder="Enter keyword or website">
+          <button id="search-btn">Search</button>
+          <button id="back-btn">Back</button>
+        </div>
+        <div id="date-container">
+          <input type="date" id="date-input">
+          <button id="date-search-btn">Search</button>
+          <button id="back-date-btn">Back</button>
+        </div>
+      </div>
+      <div id="highlights-container"></div>
+    </main>
+  </div>
+  <script src="highlight.js"></script>
+</body>
+
+</html>
