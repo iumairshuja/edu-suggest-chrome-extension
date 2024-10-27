@@ -257,3 +257,14 @@ header h1 {
     gap: 0.5rem;
   }
 }
+
+.highlight-keywords {
+  font-size: 0.9rem; /* Slightly smaller font size */
+  color: var(--primary-color); /* Use primary color for keywords */
+  margin-top: 0.5rem; /* Space above the keywords */
+  font-weight: bold; /* Make keywords bold */
+}
+
+.highlight-keywords strong {
+  color: var(--text-color); /* Different color for the "Keywords:" label */
+}

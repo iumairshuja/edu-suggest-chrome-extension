@@ -105,6 +105,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Truncate URL for display
             const displayUrl = new URL(highlight.url).hostname;
 
+            // Create a string for keywords
+            const keywordsString = highlight.keywords.map(keyword => keyword.keyword).join(', ');
+
             highlightElement.innerHTML = `
                 <div class="highlight-content">
                     <div class="highlight-text">
@@ -118,6 +121,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="highlight-date" data-timestamp="${highlight.timestamp}">
                             <i class="far fa-clock"></i>
                         </span>
+                    </div>
+                    <div class="highlight-keywords">
+                        <strong>Keywords:</strong> ${keywordsString}
                     </div>
                     <button class="delete-btn" data-id="${highlight.timestamp}">
                         <i class="fas fa-trash-alt"></i> Delete
@@ -275,3 +281,4 @@ document.addEventListener('DOMContentLoaded', () => {
     // Update times every minute
     setInterval(updateHighlightTimes, 60000);
 });
+
