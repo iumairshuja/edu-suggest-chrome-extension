@@ -86,12 +86,34 @@ document.addEventListener("mouseup", (e) => {
   }
 });
 
-function saveHighlight(text, color, element) {
+async function extractKeywords(text) {
+  try {
+    const response = await fetch('http://localhost:5000/extract_keywords', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ text: text })
+    });
+    const keywords = await response.json();
+    console.log('KEYWORDS:', keywords);
+    return keywords;
+  } catch (error) {
+    console.error('Error extracting keywords:', error);
+    return [];
+  }
+}
+
+async function saveHighlight(text, color, element) {
+  // Extract keywords first
+  const keywords = await extractKeywords(text);
+
   const highlight = {
     text: text,
     color: color,
     url: window.location.href,
     timestamp: Date.now(),
+    keywords: keywords, // Add keywords to the highlight object
     elementInfo: {
       tagName: element.tagName,
       innerHTML: element.innerHTML,
@@ -121,22 +143,6 @@ function saveHighlight(text, color, element) {
       }
     });
   });
-
-  // Send the highlighted text to the Flask server for keyword extraction
-  fetch('http://localhost:5000/extract_keywords', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ text: text })
-  })
-    .then(response => response.json())
-    .then(keywords => {
-      console.log('KEYWORDS:', keywords);
-    })
-    .catch(error => {
-      console.error('Error extracting keywords:', error);
-    });
 }
 
 function getXPathForElement(element) {
