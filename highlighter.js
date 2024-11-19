@@ -88,7 +88,7 @@ document.addEventListener("mouseup", (e) => {
 
 async function extractKeywords(text) {
   try {
-    const response = await fetch('http://localhost:5000/extract_keywords', {
+    const response = await fetch('https://iumairshuja.pythonanywhere.com/extract_keywords', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
