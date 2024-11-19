@@ -43,12 +43,14 @@ EduSuggest is a powerful Chrome extension that enhances your reading experience 
 
 1. Clone the repository
 
-   bash
+   ```bash
    git clone https://github.com/iumairshuja/edu-suggest-chrome-extension.git
+   ```
 
 2. Install Python dependencies
-   bash
+   ```bash
    pip install flask flask-cors rake-nltk nltk
+   ```
 
 3. Load the extension in Chrome
    - Open Chrome and navigate to `chrome://extensions/`
