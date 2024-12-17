@@ -74,4 +74,4 @@ def extract_keywords():
         return jsonify({"error": "An internal error occurred"}), 500
 
 if __name__ == '__main__':
-    app.run(port=5000)
+    app.run(port=5001)
