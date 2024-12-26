@@ -1,14 +1,24 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import yake
+import re
 
 app = Flask(__name__)
 CORS(app)
 
-def extract_keywords(text, max_ngram_size=3, num_keywords=10):
-    """
-    Extract keywords from text using YAKE
-    """
+def clean_text(text):
+    # Remove contractions from being considered as separate keywords
+    text = re.sub(r"'re\s", " are ", text)
+    text = re.sub(r"'s\s", " is ", text)
+    text = re.sub(r"'m\s", " am ", text)
+    text = re.sub(r"'ll\s", " will ", text)
+    text = re.sub(r"n't\s", " not ", text)
+    return text
+
+def extract_keywords(text, max_ngram_size=3, num_keywords=12):
+    # Clean the text first
+    cleaned_text = clean_text(text)
+    
     language = "en"
     deduplication_threshold = 0.9
     deduplication_algo = 'seqm'
@@ -24,12 +34,17 @@ def extract_keywords(text, max_ngram_size=3, num_keywords=10):
         features=None
     )
     
-    # Extract and sort keywords
-    keywords = kw_extractor.extract_keywords(text)
+    keywords = kw_extractor.extract_keywords(cleaned_text)
     sorted_keywords = sorted(keywords, key=lambda x: x[1])
     
-    # Convert to list of dictionaries
-    return [{"keyword": kw, "score": score} for kw, score in sorted_keywords[:num_keywords]]
+    # Filter out invalid keywords
+    valid_keywords = [
+        {"keyword": kw, "score": score}
+        for kw, score in sorted_keywords
+        if len(kw.split()) <= max_ngram_size and "'" not in kw
+    ]
+    
+    return valid_keywords[:num_keywords]
 
 @app.route('/extract_keywords', methods=['POST'])
 def keyword_extraction():
