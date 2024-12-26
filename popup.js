@@ -51,14 +51,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function loadHighlights() {
     chrome.storage.local.get("highlights", (result) => {
-      //  console.log("Retrieved highlights:", result.highlights); // Debug log
       const highlights = result.highlights || [];
       highlightsList.innerHTML = "";
       if (Array.isArray(highlights)) {
         if (highlights.length === 0) {
           highlightsList.innerHTML = "<div>No highlights found</div>";
         } else {
-          highlights.forEach((highlight, index) => {
+          // Iterate through the highlights in reverse order
+          for (let i = highlights.length - 1; i >= 0; i--) {
+            const highlight = highlights[i];
             const li = document.createElement("li");
             li.classList.add("highlight-item", "animate__animated", "animate__fadeIn");
 
@@ -83,13 +84,13 @@ document.addEventListener("DOMContentLoaded", () => {
           `;
 
             li.querySelector(".view-btn").addEventListener("click", () =>
-              viewHighlight(highlight, index)
+              viewHighlight(highlight, i)
             );
             li.querySelector(".delete-btn").addEventListener("click", () =>
-              deleteHighlight(index)
+              deleteHighlight(i)
             );
             highlightsList.appendChild(li);
-          });
+          }
         }
       } else {
         console.error("Highlights is not an array:", highlights);
