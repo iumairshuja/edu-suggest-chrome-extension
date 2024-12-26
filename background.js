@@ -1,5 +1,5 @@
 chrome.runtime.onInstalled.addListener(() => {
-  console.log('EduSuggest installed');
+  //  console.log('EduSuggest installed');
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {

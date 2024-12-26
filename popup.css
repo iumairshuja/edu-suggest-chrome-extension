@@ -104,6 +104,12 @@ h1 {
   gap: 0.5rem;
 }
 
+.highlight-text br {
+  display: block;
+  margin: 10px 0;
+  content: "";
+}
+
 .highlight-text {
   padding: 0.5rem 1rem;
   line-height: 1.6;
@@ -112,7 +118,8 @@ h1 {
   font-size: 0.9rem;
   background-color: #f8f9fa;
   border-radius: 2px;
-  white-space: normal;
+  white-space: pre-line;
+  margin-bottom: 10px;
   overflow: hidden;
   min-height: 4.7em;
 }

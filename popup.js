@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function loadHighlights() {
     chrome.storage.local.get("highlights", (result) => {
-      console.log("Retrieved highlights:", result.highlights); // Debug log
+      //  console.log("Retrieved highlights:", result.highlights); // Debug log
       const highlights = result.highlights || [];
       highlightsList.innerHTML = "";
       if (Array.isArray(highlights)) {
@@ -61,21 +61,26 @@ document.addEventListener("DOMContentLoaded", () => {
           highlights.forEach((highlight, index) => {
             const li = document.createElement("li");
             li.classList.add("highlight-item", "animate__animated", "animate__fadeIn");
+
+            // Process the text with both line breaks and sentence limiting
+            const processedText = highlight.text
+              .split(/[.!?]+/).slice(0, 2).join('.') + (highlight.text.split(/[.!?]+/).length > 2 ? '.' : '');
+
             li.innerHTML = `
-    <div class="highlight-content">
-      <div class="highlight-text">
-        ${highlight.text.split(/[.!?]+/).slice(0, 2).join('.')}${highlight.text.split(/[.!?]+/).length > 2 ? '.' : ''}
-      </div>
-      <div class="highlight-actions">
-        <button class="view-btn" title="View highlight">
-          <i class="fas fa-eye"></i>
-        </button>
-        <button class="delete-btn" title="Delete highlight">
-          <i class="fas fa-trash"></i>
-        </button>
-      </div>
-  
-  `;
+            <div class="highlight-content">
+              <div class="highlight-text">
+                ${processedText}
+              </div>
+              <div class="highlight-actions">
+                <button class="view-btn" title="View highlight">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="delete-btn" title="Delete highlight">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          `;
 
             li.querySelector(".view-btn").addEventListener("click", () =>
               viewHighlight(highlight, index)

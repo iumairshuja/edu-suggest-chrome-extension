@@ -180,7 +180,17 @@ header h1 {
   gap: 1rem;
   align-items: flex-start;
 }
+.highlight-text p {
+    white-space: pre-line; /* Preserves line breaks */
+    margin: 0;
+    padding: 0;
+}
 
+.highlight-text br {
+    display: block;
+    margin: 10px 0;
+    content: "";
+}
 .highlight-color {
   width: 4px;
   height: 100%;
@@ -194,6 +204,8 @@ header h1 {
   line-height: 1.6;
   color: var(--text-color);
   font-size: 1rem;
+  white-space: pre-line; 
+  padding: 0;
 }
 
 .highlight-info {

@@ -108,28 +108,31 @@ document.addEventListener('DOMContentLoaded', () => {
             // Create a string for keywords
             const keywordsString = highlight.keywords.map(keyword => keyword.keyword).join(', ');
 
+            // Format the text by replacing \n\n with <br><br>
+            const formattedText = highlight.text.replace(/\n\n/g, '<br><br>');
+
             highlightElement.innerHTML = `
-                <div class="highlight-content">
-                    <div class="highlight-text">
-                        <span class="highlight-color" style="background-color: ${highlight.color};"></span>
-                        <p>${highlight.text}</p>
-                    </div>
-                    <div class="highlight-info">
-                        <a href="${highlight.url}" target="_blank" class="highlight-url">
-                            <i class="fas fa-link"></i> ${displayUrl}
-                        </a>
-                        <span class="highlight-date" data-timestamp="${highlight.timestamp}">
-                            <i class="far fa-clock"></i>
-                        </span>
-                    </div>
-                    <div class="highlight-keywords">
-                        <strong>Keywords:</strong> ${keywordsString}
-                    </div>
-                    <button class="delete-btn" data-id="${highlight.timestamp}">
-                        <i class="fas fa-trash-alt"></i> Delete
-                    </button>
+            <div class="highlight-content">
+                <div class="highlight-text">
+                    <span class="highlight-color" style="background-color: ${highlight.color};"></span>
+                    <p>${formattedText}</p>
                 </div>
-            `;
+                <div class="highlight-info">
+                    <a href="${highlight.url}" target="_blank" class="highlight-url">
+                        <i class="fas fa-link"></i> ${displayUrl}
+                    </a>
+                    <span class="highlight-date" data-timestamp="${highlight.timestamp}">
+                        <i class="far fa-clock"></i>
+                    </span>
+                </div>
+                <div class="highlight-keywords">
+                    <strong>Keywords:</strong> ${keywordsString}
+                </div>
+                <button class="delete-btn" data-id="${highlight.timestamp}">
+                    <i class="fas fa-trash-alt"></i> Delete
+                </button>
+            </div>
+        `;
             container.appendChild(highlightElement);
         });
 

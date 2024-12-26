@@ -1,9 +1,21 @@
-.edusuggest-highlight {
-  display: inline;
-  padding: 2px 0;
+mark.edusuggest-highlight {
+  padding: 0;
+  border-radius: 3px;
+  background-color: inherit;
   cursor: pointer;
-  border-radius: 2px;
-  transition: background-color 0.3s;
+}
+
+mark.edusuggest-highlight:hover {
+  opacity: 0.8;
+}
+
+li mark.edusuggest-highlight {
+    display: inline-block;
+    width: 100%;
+  }
+  
+li mark.edusuggest-highlight::marker {
+    display: none;
 }
 
 .edusuggest-highlight-overlay {
@@ -42,6 +54,7 @@
 .edusuggest-highlight-color[data-color="blue"] {
   background-color: #2196F3 !important; /* Use !important to override any conflicting styles */
 }
+
 
 .edusuggest-tooltip {
   position: absolute;

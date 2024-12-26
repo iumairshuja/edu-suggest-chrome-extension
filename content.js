@@ -1,4 +1,4 @@
-console.log('EduSuggest content script loaded');
+//console.log('EduSuggest content script loaded');
 
 let highlightColor = '#ffff00'; // Default yellow
 
