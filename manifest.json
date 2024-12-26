@@ -10,7 +10,7 @@
     "scripting"
   ],
   "host_permissions": [
-    "https://iumairshuja.pythonanywhere.com/*",
+    "https://yake-keyword-extractor.vercel.app/*",
     "<all_urls>"
   ],
   "action": {
