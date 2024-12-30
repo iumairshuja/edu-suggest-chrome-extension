@@ -1,1 +1,4 @@
 .vercel
+venv/
+scraping/*/
+node_modules/
