@@ -14,7 +14,7 @@ user_agents = [
 def read_urls_from_file(file_path):
     with open(file_path, 'r') as f:
         urls = f.readlines()
-    return [url.strip() for url in urls]  
+    return [url.strip() for url in urls[3000:]]
 
 def scrape_article(url):
     try:
@@ -56,7 +56,7 @@ data = [result for result in results if result]
 df = pd.DataFrame(data)
 
 # Save to Excel
-output_file = "simpliLearn.xlsx"
+output_file = "coursera_3000toEOF.xlsx"
 df.to_excel(output_file, index=False)
 
 print(f"Data saved to {output_file}")
